@@ -67,7 +67,7 @@ void PKGViewer::OpenPKGFolder() {
         QFileInfoList fileInfoList = directory.entryInfoList(QDir::Files);
         for (const QFileInfo& fileInfo : fileInfoList) {
             QString file_ext = fileInfo.suffix();
-            if (fileInfo.isFile() && file_ext == "pkg") {
+            if (fileInfo.isFile() && (file_ext == "pkg" || file_ext == "PKG")) {
                 m_pkg_list.append(fileInfo.absoluteFilePath());
             }
         }
