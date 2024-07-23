@@ -1,6 +1,7 @@
 // SPDX-FileCopyrightText: Copyright 2024 shadPS4 Emulator Project
 // SPDX-License-Identifier: GPL-2.0-or-later
 
+#include <emulator.h>
 #include "common/path_util.h"
 #include "game_grid_frame.h"
 
@@ -23,6 +24,8 @@ GameGridFrame::GameGridFrame(std::shared_ptr<GameInfoClass> game_info_get, QWidg
     PopulateGameGrid(m_game_info->m_games, false);
 
     connect(this, &QTableWidget::cellClicked, this, &GameGridFrame::SetGridBackgroundImage);
+
+    connect(this, &QTableWidget::cellDoubleClicked, this, &GameGridFrame::LaunchGame);
 
     connect(this->verticalScrollBar(), &QScrollBar::valueChanged, this,
             &GameGridFrame::RefreshGridBackgroundImage);
@@ -147,4 +150,16 @@ void GameGridFrame::RefreshGridBackgroundImage() {
         palette.setColor(QPalette::Highlight, transparentColor);
         this->setPalette(palette);
     }
+}
+
+void GameGridFrame::LaunchGame(int row, int column) {
+    int itemID = (row * this->columnCount()) + column;
+    QString gamePath = QString::fromStdString(m_game_info->m_games[itemID].path + "/eboot.bin");
+
+    Config::addRecentFile(gamePath.toStdString());
+    const auto config_dir = Common::FS::GetUserPath(Common::FS::PathType::UserDir);
+    Config::save(config_dir / "config.toml");
+
+    Core::Emulator emulator;
+    emulator.Run(gamePath.toUtf8().constData());
 }

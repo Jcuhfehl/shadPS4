@@ -148,6 +148,24 @@ void setRecentFiles(std::vector<std::string> recentFiles) {
     m_recent_files = recentFiles;
 }
 
+void addRecentFile(std::string filePath){
+    std::vector<std::string> vec = Config::getRecentFiles();
+    if (!vec.empty()) {
+        if (filePath == vec.at(0)) {
+            return;
+        }
+        auto it = std::find(vec.begin(), vec.end(), filePath);
+        if (it != vec.end()) {
+            vec.erase(it);
+        }
+    }
+    vec.insert(vec.begin(), filePath);
+    if (vec.size() > 6) {
+        vec.pop_back();
+    }
+    setRecentFiles(vec);
+}
+
 u32 getMainWindowGeometryX() {
     return main_window_geometry_x;
 }

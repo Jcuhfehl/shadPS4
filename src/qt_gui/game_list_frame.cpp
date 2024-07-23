@@ -3,6 +3,7 @@
 
 #include "common/path_util.h"
 #include "game_list_frame.h"
+#include <emulator.h>
 
 GameListFrame::GameListFrame(std::shared_ptr<GameInfoClass> game_info_get, QWidget* parent)
     : QTableWidget(parent), m_game_info(game_info_get) {
@@ -49,6 +50,7 @@ GameListFrame::GameListFrame(std::shared_ptr<GameInfoClass> game_info_get, QWidg
     PopulateGameList();
 
     connect(this, &QTableWidget::itemClicked, this, &GameListFrame::SetListBackgroundImage);
+    connect(this, &QTableWidget::itemDoubleClicked, this, &GameListFrame::LaunchGame);
     connect(this->verticalScrollBar(), &QScrollBar::valueChanged, this,
             &GameListFrame::RefreshListBackgroundImage);
     connect(this->horizontalScrollBar(), &QScrollBar::valueChanged, this,
@@ -211,4 +213,19 @@ void GameListFrame::SetRegionFlag(int row, int column, QString itemStr) {
     widget->setLayout(layout);
     this->setItem(row, column, item);
     this->setCellWidget(row, column, widget);
+}
+
+void GameListFrame::LaunchGame(QTableWidgetItem* item) {
+    if (!item) {
+        // handle case where no item was clicked
+        return;
+    }
+    QString gamePath = QString::fromStdString(m_game_info->m_games[item->row()].path + "/eboot.bin");
+
+    Config::addRecentFile(gamePath.toStdString());
+    const auto config_dir = Common::FS::GetUserPath(Common::FS::PathType::UserDir);
+    Config::save(config_dir / "config.toml");
+
+    Core::Emulator emulator;
+    emulator.Run(gamePath.toUtf8().constData());
 }

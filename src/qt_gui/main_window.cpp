@@ -672,21 +672,7 @@ void MainWindow::HandleResize(QResizeEvent* event) {
 }
 
 void MainWindow::AddRecentFiles(QString filePath) {
-    std::vector<std::string> vec = Config::getRecentFiles();
-    if (!vec.empty()) {
-        if (filePath.toStdString() == vec.at(0)) {
-            return;
-        }
-        auto it = std::find(vec.begin(), vec.end(), filePath.toStdString());
-        if (it != vec.end()) {
-            vec.erase(it);
-        }
-    }
-    vec.insert(vec.begin(), filePath.toStdString());
-    if (vec.size() > 6) {
-        vec.pop_back();
-    }
-    Config::setRecentFiles(vec);
+    Config::addRecentFile(filePath.toStdString());
     const auto config_dir = Common::FS::GetUserPath(Common::FS::PathType::UserDir);
     Config::save(config_dir / "config.toml");
     CreateRecentGameActions(); // Refresh the QActions.

@@ -44,6 +44,7 @@ void setMainWindowHeight(u32 height);
 void setPkgViewer(std::vector<std::string> pkgList);
 void setElfViewer(std::vector<std::string> elfList);
 void setRecentFiles(std::vector<std::string> recentFiles);
+void addRecentFile(std::string filePath);
 
 u32 getMainWindowGeometryX();
 u32 getMainWindowGeometryY();

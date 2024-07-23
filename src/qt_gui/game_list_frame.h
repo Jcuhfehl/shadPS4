@@ -36,6 +36,7 @@ public Q_SLOTS:
 private:
     void SetTableItem(int row, int column, QString itemStr);
     void SetRegionFlag(int row, int column, QString itemStr);
+    void LaunchGame(QTableWidgetItem* item);
     QList<QAction*> m_columnActs;
     GameInfoClass* game_inf_get = nullptr;
     bool ListSortedAsc = true;
